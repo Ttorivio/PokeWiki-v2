@@ -71,7 +71,7 @@ export function PokemonFilters({ onFilterChange, filters }: PokemonFiltersProps)
   }
 
   return (
-    <Card>
+    <Card className="sticky top-4 h-fit">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>

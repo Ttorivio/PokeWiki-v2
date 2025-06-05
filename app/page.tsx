@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, Loader2, Database } from "lucide-react"
+import { ChevronDown, ChevronRight } from "lucide-react";
+
 import type { Pokemon, PokemonTypeCount, LegendaryStats, GenerationStats } from "@/lib/models/pokemon"
 
 export default function Home() {
@@ -22,6 +24,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [seeding, setSeeding] = useState(false)
+  const [showManagement, setShowManagement] = useState(true);
   const [setupRequired, setSetupRequired] = useState(false)
   const [pokemonLimit, setPokemonLimit] = useState("151")
   const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, pages: 0 })
@@ -203,10 +206,15 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="bg-white rounded-[15px] border border-black p-6 shadow text-center space-y-2 w-fit mx-auto">
-        <h1 className="text-4xl font-bold">Pokefan</h1>
+      <div className="bg-white rounded-[15px] border border-black p-6 shadow text-center w-fit mx-auto space-y-2">
+        <img
+            src="/pokemon-logo.png"
+            alt="Pokefan logo"
+            className="h-24 mx-auto object-contain"
+        />
         <p className="text-muted-foreground">Explora y analiza datos completos de tus pokemones favoritos</p>
       </div>
+
 
       {setupRequired && (
         <Alert>
@@ -250,34 +258,42 @@ export default function Home() {
       {!error && !setupRequired && (
         <>
           {/* Botón para agregar más Pokémon cuando ya hay datos */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestión de Datos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Select value={pokemonLimit} onValueChange={setPokemonLimit}>
-                  <SelectTrigger className="w-80">
-                    <SelectValue placeholder="Selecciona cuántos Pokémon cargar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pokemonLimits.map((limit) => (
-                      <SelectItem key={limit.value} value={limit.value}>
-                        {limit.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button onClick={addMorePokemon} disabled={seeding} className="flex items-center gap-2">
-                  {seeding && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {seeding ? "Agregando Pokémon..." : "Agregar más Pokémon"}
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Actualmente tienes {legendaryStats?.total || 0} Pokémon en la base de datos
-              </p>
-            </CardContent>
-          </Card>
+          <Button variant="outline" onClick={() => setShowManagement((prev) => !prev)} className="flex items-center gap-2 border-black">
+            {showManagement ? <ChevronDown /> : <ChevronRight />}
+            {showManagement ? "Ocultar gestión de datos" : "Mostrar gestión de datos"}
+          </Button>
+
+          {showManagement && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gestión de Datos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <Select value={pokemonLimit} onValueChange={setPokemonLimit}>
+                      <SelectTrigger className="w-80">
+                        <SelectValue placeholder="Selecciona cuántos Pokémon cargar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pokemonLimits.map((limit) => (
+                            <SelectItem key={limit.value} value={limit.value}>
+                              {limit.label}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={addMorePokemon} disabled={seeding} className="flex items-center gap-2">
+                      {seeding && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {seeding ? "Agregando Pokémon..." : "Agregar más Pokémon"}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Actualmente tienes {legendaryStats?.total || 0} Pokémon en la base de datos
+                  </p>
+                </CardContent>
+              </Card>
+          )}
+
 
           <Tabs defaultValue="dashboard" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2 border border-black rounded-lg overflow-hidden">
@@ -348,7 +364,7 @@ export default function Home() {
                       {pokemon.length > 0 ? (
                         <PokemonList pokemon={pokemon} />
                       ) : (
-                        <div className="text-center py-8">No se encontraron Pokémon con los filtros actuales</div>
+                        <div className="text-center py-8">  No se encontraron Pokémon con los filtros actuales</div>
                       )}
 
                       {pagination.pages > 1 && (
